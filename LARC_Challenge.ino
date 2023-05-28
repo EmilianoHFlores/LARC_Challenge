@@ -169,7 +169,7 @@ bool logLLines = false;
 bool logRLines = false;
 
 //According to the challenge
-int initialAngle = -90;
+int initialAngle = 90;
 
 void setup() {
     Serial.begin(115200);
@@ -189,19 +189,27 @@ void setup() {
     initialReorientation(initialAngle);
     Serial.println("Done, Starting...");
     base.changeDirection(STOP);
-    while(1){}
 }
 // Used if ROS disabled.
+int moveRPM = 275;
 void loop() {
   //base.goForward(250);
-  advanceForwardBNO(250, 5);
+  advanceBackwardsBNO(moveRPM, 5);
   Serial.println("STOPPING");
   delay(1000);
-  base.reorientate(90);
+  base.reorientate(-90);
+  delay(500);
+  advanceForwardBNO(moveRPM, 2);
+  Serial.println("STOPPING");
+  while(1){}
+  /*advanceForwardBNO(250, 5);
+  Serial.println("STOPPING");
+  delay(1000);
+  base.reorientate(-90);
   delay(500);
   advanceForwardBNO(250, 2);
   Serial.println("STOPPING");
-  while(1){}
+  while(1){}*/
   /*advanceForward(250,2);
   Serial.println("STOPPING");
   delay(1000);
@@ -271,6 +279,27 @@ void advanceForwardBNO(double speed, int tiles){
   //Trust current pwm for last square
   while(backWhite()){
     base.goForward(speed);
+  }
+  base.changeDirection(BRAKE);
+}
+
+void advanceBackwardsBNO(double speed, int tiles){
+  base.goBackwards(speed);
+  bool repositionLeft = false;
+  bool repositionRight = false;
+  for (int i=0; i<tiles; i++){
+    while(backWhite()){
+      base.goBackwards(speed);
+    }
+    while(!backWhite()){
+      base.goBackwards(speed);
+    }
+    Serial.println("Jumped line");
+  }
+
+  //Trust current pwm for last square
+  while(frontWhite()){
+    base.goBackwards(speed);
   }
   base.changeDirection(BRAKE);
 }

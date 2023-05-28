@@ -46,6 +46,7 @@ class LARC_Base {
     void baseConstantRPM(const double velocityFL, const double velocityFR, const double velocityBL, const double velocityBR);
 
     void goForward(const double velocity);
+    void goBackwards(const double velocity);
 
     void reorientate(float angle); 
 
@@ -91,9 +92,9 @@ class LARC_Base {
     float required_angle = 0;
     float current_angle = 0;
     double prev_bno_output = 0;
-    double angle_treshold = 1.5;
+    double angle_treshold = 1;
     const double angle_treshold_move = 1;
-    const double angle_treshold_reorientate = 2;
+    const double angle_treshold_reorientate = 3.5;
 
     double anglekP = 45;
     double movekP = 45;

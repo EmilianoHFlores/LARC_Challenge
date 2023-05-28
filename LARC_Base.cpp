@@ -154,6 +154,28 @@ void LARC_Base::goForward(const double velocity)
   prev_bno_output = output;
 }
 
+// uses both PIDs to move backwards
+void LARC_Base::goBackwards(const double velocity)
+{
+  double output = prev_bno_output;
+  kP = movekP;
+  angle_treshold = angle_treshold_move;
+  changeDirection(BACKWARD);
+  computeAnglePID(required_angle, output);
+  output = abs(output);
+  if (current_angle > required_angle)
+  {
+    // turn right
+    baseConstantRPM(velocity + output, velocity - output, velocity + output, velocity - output);
+  }
+  else
+  {
+    // turn left
+    baseConstantRPM(velocity - output, velocity + output, velocity - output, velocity + output);
+  }
+  prev_bno_output = output;
+}
+
 void LARC_Base::reorientate(float angle)
 {
   required_angle = angle;
