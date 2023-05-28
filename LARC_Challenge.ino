@@ -46,7 +46,7 @@ uint16_t rightLine1_ts = 0;
 uint16_t rightLine2_ts = 0;
 
 //treshold to see white
-const uint16_t linets = 200;
+const uint16_t linets = 300;
 
 // START: MOTORS
 
@@ -169,7 +169,7 @@ bool logLLines = false;
 bool logRLines = false;
 
 //According to the challenge
-int initialAngle = 90;
+int initialAngle = 0;
 
 void setup() {
     Serial.begin(115200);
@@ -178,7 +178,7 @@ void setup() {
     base.setPID(kp, ki, kd, PID_SAMPLE_RATE);
     base.setAnglePID(anglekP, anglekI, anglekD, PID_SAMPLE_RATE);
     base.setLogPID(false);
-    base.setLogAnglePID(true);
+    base.setLogAnglePID(false);
     logLines = false;
     logLLines = false;
     logRLines = false;
@@ -194,13 +194,22 @@ void setup() {
 int moveRPM = 275;
 void loop() {
   //base.goForward(250);
-  //From 6,7 to 2,4
+
+  //Using mecanum
   advanceForwardBNO(moveRPM, 4);
+  Serial.println("Moving left");
+  advanceLeft(moveRPM, 3);
+  Serial.println("FINISHED");
+  while(1){}
+
+  //From 6,7 to 2,4
+  /*advanceForwardBNO(moveRPM, 4);
   delay(250);
   base.reorientate(-90);
   delay(250);
   advanceForwardBNO(moveRPM, 3);
   while(1){}
+  */
     /*advanceForwardBNO(moveRPM, 5);
   Serial.println("STOPPING");
   delay(250);
@@ -326,7 +335,6 @@ void advanceForward(double speed, int tiles){
     Serial.println("Jumped line");
   }
 
-  //Trust current pwm for last square
   while(backWhite()){
     base.baseConstantRPM(speed);
   }
@@ -348,22 +356,52 @@ void advanceBackwards(double speed, int tiles){
     Serial.println("Jumped line");
   }
 
-  //Trust current pwm for last square
   while(frontWhite()){
     base.baseConstantRPM(speed);
   }
   base.changeDirection(BRAKE);
-  if (repositionLeft){
-    Serial.println("Repositioning left");
+}
+
+void advanceLeft(double speed, int tiles){
+  base.mecanumLeft();
+  base.baseConstantRPM(speed);
+  for (int i=0; i<tiles; i++){
+    while(leftWhite()){
+      base.baseConstantRPM(speed);
+    }
+    while(!leftWhite()){
+      base.baseConstantRPM(speed);
+    }
+    Serial.println("Jumped line");
   }
-  if (repositionRight){
-    Serial.println("Repositioning right");
+  //To allow room for the analogRead
+  delay(100);
+  while(rightWhite()){
+    base.baseConstantRPM(speed);
   }
+  base.changeDirection(BRAKE);
+}
+
+void advanceRight(double speed, int tiles){
+  base.mecanumRight();
+  base.baseConstantRPM(speed);
+  for (int i=0; i<tiles; i++){
+    while(rightWhite()){
+      base.baseConstantRPM(speed);
+    }
+    while(!rightWhite()){
+      base.baseConstantRPM(speed);
+    }
+    Serial.println("Jumped line");
+  }
+  while(leftWhite()){
+    base.baseConstantRPM(speed);
+  }
+  base.changeDirection(BRAKE);
 }
 
 void calibrateLines(int n){
   //tresholds
-  delay(1000);
   frontLine0_ts = 0;
   frontLine1_ts = 0;
   frontLine2_ts = 0;
