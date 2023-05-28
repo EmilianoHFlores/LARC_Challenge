@@ -102,9 +102,9 @@ const double ki = 75;
 const double kd = 0;
 #endif
 
-const double anglekP = 8;
+const double anglekP = 9;
 const double anglekI = 3;
-const double anglekD = 4;
+const double anglekD = 5;
 
 double error_sum = 0;
 double error_prev = 0;
@@ -194,14 +194,21 @@ void setup() {
 int moveRPM = 275;
 void loop() {
   //base.goForward(250);
-  advanceBackwardsBNO(moveRPM, 5);
-  Serial.println("STOPPING");
-  delay(1000);
+  //From 6,7 to 2,4
+  advanceForwardBNO(moveRPM, 4);
+  delay(250);
   base.reorientate(-90);
-  delay(500);
+  delay(250);
+  advanceForwardBNO(moveRPM, 3);
+  while(1){}
+    /*advanceForwardBNO(moveRPM, 5);
+  Serial.println("STOPPING");
+  delay(250);
+  base.reorientate(-90);
+  delay(250);
   advanceForwardBNO(moveRPM, 2);
   Serial.println("STOPPING");
-  while(1){}
+  while(1){}*/
   /*advanceForwardBNO(250, 5);
   Serial.println("STOPPING");
   delay(1000);

@@ -45,15 +45,19 @@ class LARC_Base {
 
     void baseConstantRPM(const double velocityFL, const double velocityFR, const double velocityBL, const double velocityBR);
 
+    // Combines encoder RPMs and adds a correction factor from the computedAnglePID function, to face in a fixed angle moving forward
     void goForward(const double velocity);
     void goBackwards(const double velocity);
 
+    // Orientates the robot to an angle, using computeAnglePID
     void reorientate(float angle); 
 
     void setAnglePID(double kP, double kI, double kD, uint16_t pid_time_sample);
 
+    //transforms an angle received from 0 to 360 to -180 to 180
     float transform360to180(float angle);
 
+    //Computes RPMs to reach a target angle for the robot to face
     void computeAnglePID(double target_angle, double &output);
 
     //Movement with PID from motors + BNO
